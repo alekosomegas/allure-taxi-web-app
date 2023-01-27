@@ -31,6 +31,17 @@ main{
     padding: 0.5rem;
     min-width: 300px;
 }
+.ride-request--confirm {
+    height: fit-content;
+    width: 450px;
+    background-color: whitesmoke;
+    padding: 0.5rem;
+    min-width: 300px;
+}
+
+.ride-request--confirm textarea, .ride-request--confirm textarea:focus {
+    height: 100px;
+}
 
 .map-container {
     width: 450px;
@@ -55,8 +66,17 @@ main{
     padding: 10px 30px ;
     border: 0;
 }
-
 .input-search:focus, .flatpickr-input:focus {
+    outline: none;
+}
+
+.input-extra, .input-extra:focus {
+    width: 400px;
+    height: 30px;
+    padding: 10px 10px ;
+    border: 0;
+    margin-top: 10px;
+    margin-left: 35px; 
     outline: none;
 }
 
@@ -86,6 +106,11 @@ main{
     font-weight: 700;
     font-size: 40px;
     justify-content: center;
+}
+
+.confirm-title {
+    height: 30px;
+    font-weight: 600;
 }
 
 .navbar-brand {
