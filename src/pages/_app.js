@@ -12,11 +12,39 @@ export default function App({ Component, pageProps }) {
       {from: {coordinates: [], address: ""}, 
        to:   {coordinates: [], address: ""}})
 
+  const [date, setDate] = React.useState(new Date());
+
+  const [ride, setRide] = React.useState({
+        route: route,
+        notesFrom: "",
+        notesTo: "",
+        dateAndTime: "",
+        email: "",
+        tel: "",
+        name: "",
+        requests: "",
+    })
+
+  const [contact, setContact] = React.useState({
+      contact: false,
+      name: "",
+      email: "",
+      tel: "",
+      message: "",
+  })
+    
+
   return (
     <>
         <Navbar />
         <Component 
             {...pageProps} 
+            contact={contact}
+            setContact={setContact}
+            date={date}
+            setDate={setDate}
+            ride={ride}
+            setRide={setRide}
             route={route}
             setRoute={setRoute}
             locationSelected={locationSelected}

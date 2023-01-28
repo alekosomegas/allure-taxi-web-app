@@ -6,6 +6,9 @@ export default function AboutUs() {
 
             <br></br>
             <h3>About Us</h3>
+            <p>Email: kangkelidis</p>
+                <p>Tel: +35799</p>
+                <p>Address: +35799</p>
         </div>
     )
 }

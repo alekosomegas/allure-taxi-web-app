@@ -8,17 +8,7 @@ const SearchInput = dynamic(() => import("./SearchInput"), {
     ssr: false})
     
 // Used by the RideRequest parent
-export default function RouteForm({ route, setRoute, selected, setSelected, confirm }) {
-    const [ride, setRide] = React.useState({
-        route: route,
-        notesFrom: "",
-        notesTo: "",
-        dateAndTime: "",
-        email: "",
-        tel: "",
-        name: "",
-        requests: "",
-    })
+export default function RouteForm({ date, setDate, ride, setRide, route, setRoute, selected, setSelected, confirm }) {
     
     function handleRideChange(event) {
         const { name, value } = event.target
@@ -80,11 +70,31 @@ export default function RouteForm({ route, setRoute, selected, setSelected, conf
             }})
     }
 
+    async function handleSubmit(event) {
+        const data = {
+            route: route,
+            notesFrom: ride.notesFrom,
+            notesTo: ride.notesTo,
+            date: date,
+            email: ride.email,
+            tel: ride.tel,
+            requests: ride.requests
+
+        }
+
+        await fetch('api/mail', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        })
+    }
+
     return (
         <div className="ride-request--container">
         <form 
             className={confirm ? "ride-request--confirm" : "ride-request--search"}
             id={confirm ? "form-c" : "form-s"}
+            method='post'
+            onSubmit={handleSubmit}
             >
 
             {confirm ? 
@@ -139,7 +149,7 @@ export default function RouteForm({ route, setRoute, selected, setSelected, conf
             <br></br>
             <label style={{fontWeight: "600"}}>
                 Date and Time
-                <DatePicker />
+                <DatePicker date={date} setDate={setDate}/>
             </label>
 
 
@@ -193,6 +203,7 @@ export default function RouteForm({ route, setRoute, selected, setSelected, conf
                         type="submit"
                         style={{fontWeight: "600"}}
                         form="form-c"
+                        onClick={handleSubmit}
                         >Book Now
                     </button>
                 </Link>

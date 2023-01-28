@@ -7,7 +7,7 @@ const MapWithNoSSR = dynamic(() => import("./RideRequest/Map"), {
     ssr: false});
 
 // TODO: sort out how rerender happens, need to be able to select location on map
-export default function RideRequest({ route, setRoute, selected, setSelected, confirm }) {
+export default function RideRequest({ date, setDate, ride, setRide, route, setRoute, selected, setSelected, confirm }) {
 
     async function reverseAddressFinder(lat, lng, label) {
         const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&zoom=18&format=json`
@@ -51,7 +51,7 @@ export default function RideRequest({ route, setRoute, selected, setSelected, co
         <div className="ride" id="Ride">
             <div className="ride-request">
 
-                <div className="map-container">
+                <div className={`map-container ${confirm && "map-c"}`}>
                     {((selected.from || selected.to) || confirm) &&
                             <MapWithNoSSR 
                                 from={route.from.coordinates} to={route.to.coordinates} 
@@ -62,6 +62,8 @@ export default function RideRequest({ route, setRoute, selected, setSelected, co
                 </div>  
                     
                 <RouteForm 
+                    date={date} setDate={setDate}
+                    ride={ride} setRide={setRide}
                     route={route} setRoute={setRoute} 
                     selected={selected} setSelected={setSelected}
                     confirm={confirm}

@@ -9,7 +9,8 @@ main{
 }
 
 .ride {
-    height: 100vh;
+    height: fit-content;
+    margin-bottom: 50px;
 }
 
 .ride-request {
@@ -49,6 +50,10 @@ main{
     min-width: 300px;
 }
 
+.map-c {
+    height: 638px;
+}
+
 /* .image-container {
 
 } */
@@ -58,6 +63,15 @@ main{
     height: 100%;
     z-index: 0;
 }
+
+@media screen and (max-width: 1000px)  {
+    .hero-img {
+        visibility: hidden;
+    }
+    .ride {
+        height: 100vh;
+    }
+  }
 
 
 .input-search, .flatpickr-input {
@@ -174,4 +188,67 @@ main{
     background-color: black;
     height: 2px;
     
+}
+
+.contact-title {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
+.contact-title h2 {
+    font-weight: 600;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+
+}
+
+.contact-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+.contact-ta {
+    display: flex;
+    justify-content: center;
+}
+.contact-form textarea {
+    height: 100px;
+    width: fit-content;
+    flex-grow: 1;
+    max-width: 645px;
+}
+
+.contact-btn {
+    display: flex;
+    flex-direction: row-reverse;
+    width: 645px;
+    max-width: 645px;
+    align-self: center;
+}
+.contact-btn button {
+    width: 150px;
+    height: 30px;
+    font-size: medium;
+    border: 0;
+    background-color: rgb(150, 209, 225);
+}
+.contact-btn button:hover {
+    background-color: whitesmoke;
+}
+
+@media screen and (max-width: 700px)  {
+    .contact-inputs {
+        flex-direction: column;
+    }
+    .contact-btn {
+        width: fit-content;
+    }
 }
