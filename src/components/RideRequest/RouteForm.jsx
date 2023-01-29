@@ -2,16 +2,22 @@ import DatePicker from "./DatePicker"
 import dynamic from "next/dynamic"
 import React from "react"
 import Link from "next/link"
+import {useRouter} from "next/router"
+import {changeSingleStateValue} from '../../util'
 
 // import a non server side rendered search component(leaflet)
 const SearchInput = dynamic(() => import("./SearchInput"), {
     ssr: false})
     
 // Used by the RideRequest parent
-export default function RouteForm({ date, setDate, ride, setRide, route, setRoute, selected, setSelected, confirm }) {
-    
-    function handleRideChange(event) {
+export default function RouteForm({  ride, setRide, confirm }) {
+    const router = useRouter();
+
+    function handleRideExtraChange(event) {
         const { name, value } = event.target
+        if(name === "tel" && isNaN(event.nativeEvent.data)) {
+            return}
+
         setRide(prev => {
             return {
                 ...prev,
@@ -23,69 +29,92 @@ export default function RouteForm({ date, setDate, ride, setRide, route, setRout
     // Passed to its children(search) to handle text input
     function handleChange(event) {
         const { name, value } = event.target;
-        setRoute(prevRoute => {
+        setRide(prev => {
            return {
-                ...prevRoute,
-                [name] : {coordinates: [], address: value}
-           }})
-
-        // resets the location selected bool at new input
-        setSelected(prev => {
-            return {
                 ...prev,
-                [name]: false
-            }})
+                route: {
+                    ...prev.route,
+                    [name] : {coordinates: [], address: value}},
+                locationSelected: {...prev.locationSelected,
+                                    [name]: false}
+           }})
     }
 
     // Handles the event when a suggestion is clicked 
     // Uses label to distinguish between inputs
     function handleSuggestionClicked(event, label) {
-        setRoute(prevRoute => {
+        setRide(prev => {
             return {
-                 ...prevRoute,
-                 [label]: {coordinates: [event.target.getAttribute('y'), event.target.getAttribute('x')], address: event.target.innerHTML}
+                 ...prev,
+                 route: {
+                    ...prev.route,
+                    [label]: {coordinates: [event.target.getAttribute('y'), event.target.getAttribute('x')],
+                              address: event.target.innerHTML}},
+                locationSelected: {...prev.locationSelected,
+                                    [label]: true}
             } 
          })
-        
-         // prevents suggestions from showing
-         setSelected(prev => {
-            return {
-                ...prev,
-                [label]: true
-            }})
     }
 
     function handleClear(event, label) {
-        setRoute(prev => {
+        setRide(prev => {
             return {
                 ...prev,
-                [label]: {coordinates: [], address: ""}
+                route: {
+                    ...prev.route,
+                    [label]: {coordinates: [], address: ""}},
+                locationSelected: {...prev.locationSelected,
+                                    [label]: false}
             }
         })
+    }
 
-        setSelected(prev => {
-            return {
-                ...prev,
-                [label]: false
-            }})
+    const [invalidInputs, setInvalidInputs] = React.useState({from: false, to: false, tel: false})
+    React.useEffect(() => {
+        if(ride.route.from.address) {
+            changeSingleStateValue(setInvalidInputs, "from", false)
+        }
+
+        if(ride.route.to.address) {
+            changeSingleStateValue(setInvalidInputs, "to", false)
+        }
+
+        if(ride.tel) {
+            changeSingleStateValue(setInvalidInputs, "tel", false)
+        }
+    }, [ride])
+
+    function validateInputs() {
+        let formIsValid = true
+
+        if (!ride.route.from.address) {
+            formIsValid = false;
+            changeSingleStateValue(setInvalidInputs, "from", true)
+        }
+        if (!ride.route.to.address) {
+            formIsValid = false;
+            changeSingleStateValue(setInvalidInputs, "to", true)
+        }    
+        if (!ride.tel) {
+            formIsValid = false;
+            changeSingleStateValue(setInvalidInputs, "tel", true)
+        }
+
+        return formIsValid;
     }
 
     async function handleSubmit(event) {
-        const data = {
-            route: route,
-            notesFrom: ride.notesFrom,
-            notesTo: ride.notesTo,
-            date: date,
-            email: ride.email,
-            tel: ride.tel,
-            requests: ride.requests
-
+        event.preventDefault()
+        if (validateInputs()) {
+            await fetch('api/mail', {
+                method: 'POST',
+                body: JSON.stringify(ride)
+            })
+            router.push("/request-sent")
+        } else {
+            alert("Please check inputs")
+            router.push("/confirm-ride")
         }
-
-        await fetch('api/mail', {
-            method: 'POST',
-            body: JSON.stringify(data)
-        })
     }
 
     return (
@@ -105,13 +134,16 @@ export default function RouteForm({ date, setDate, ride, setRide, route, setRout
 
             <SearchInput 
                 label="from" 
-                route={route} 
-                setRoute={setRoute}
-                selected={selected}
+                route={ride.route} 
+                selected={ride.locationSelected}
                 onChange={handleChange} 
                 onClick={(event) => handleSuggestionClicked(event, "from")}
                 onClear={(event) => handleClear(event, "from")}
+                isInvalid={invalidInputs.from}
             />
+            {invalidInputs.from && 
+                <span className="errors">Cannot be empty</span>
+            }
 
             {confirm && 
                 <input 
@@ -119,20 +151,23 @@ export default function RouteForm({ date, setDate, ride, setRide, route, setRout
                     type={'text'}
                     placeholder={'notes eg. house no.'}
                     value={ride.notesFrom}
-                    onChange={handleRideChange}
+                    onChange={handleRideExtraChange}
                     name="notesFrom"
                 />
             }
 
             <SearchInput 
                 label="to"   
-                route={route}
-                setRoute={setRoute} 
-                selected={selected} 
+                route={ride.route} 
+                selected={ride.locationSelected} 
                 onChange={handleChange} 
                 onClick={(event) => handleSuggestionClicked(event, "to")}
                 onClear={(event) => handleClear(event, "to")}
+                isInvalid={invalidInputs.to}
             />
+            {invalidInputs.to && 
+                <span className="errors">Cannot be empty</span>
+            }
 
             {confirm && 
                 <input 
@@ -140,64 +175,83 @@ export default function RouteForm({ date, setDate, ride, setRide, route, setRout
                     type={'text'}
                     placeholder={'notes eg. house no.'}
                     value={ride.notesTo}
-                    onChange={handleRideChange}
+                    onChange={handleRideExtraChange}
                     name="notesTo"
-                    
                 />
             }
 
             <br></br>
             <label style={{fontWeight: "600"}}>
                 Date and Time
-                <DatePicker date={date} setDate={setDate}/>
+                <DatePicker 
+                    ride={ride} setRide={setRide}
+                />
             </label>
-
-
 
             {confirm &&
             <div>
                 <label>
                     <input
-                        className="input-extra"
+                        className={`input-extra ${invalidInputs.email && "check"}`}
                         type={'email'}
                         placeholder="Email" 
                         value={ride.email}
-                        onChange={handleRideChange}
+                        onChange={handleRideExtraChange}
                         name="email"
                     />
                 </label>
                 <label>
                     <input
-                        className="input-extra"
+                        className={`input-extra ${invalidInputs.tel && "check"}`}
                         type={'tel'}
-                        placeholder="Tel" 
+                        placeholder="Tel*" 
+                        required={true}
                         value={ride.tel}
-                        onChange={handleRideChange}
+                        onChange={handleRideExtraChange}
                         name='tel'
                     />
                 </label>
+                {invalidInputs.tel && 
+                <span className="errors">Cannot be empty</span>
+                }
                 <label>
                     <input
                         className="input-extra"
                         type={'text'}
                         placeholder="Name"
                         value={ride.name}
-                        onChange={handleRideChange}
+                        onChange={handleRideExtraChange}
                         name='name' 
                     />
                 </label>
+                <div className="select-car">
+                    <label>
+                        Select car
+                    </label>
+                    <select 
+                        value={ride.car}
+                        onChange={handleRideExtraChange}
+                        name="car"
+                        >
+                        <option 
+                            value={4}
+                            >4-Seater</option>
+                        <option 
+                            value={6}
+                            >6-Seater</option>
+                    </select>
+                </div>
                 <label>
                     <textarea
                         className="input-extra"
                         type={'text'}
                         placeholder="Requests eg. No of people, bags etc." 
                         value={ride.requests}
-                        onChange={handleRideChange}
+                        onChange={handleRideExtraChange}
                         name='requests'
                     />
                 </label>
                 
-                <Link href={{pathname:"/request-sent", query:{}}}>
                     <button 
                         className="btn-book" 
                         type="submit"
@@ -206,7 +260,6 @@ export default function RouteForm({ date, setDate, ride, setRide, route, setRout
                         onClick={handleSubmit}
                         >Book Now
                     </button>
-                </Link>
             </div>
     
             }

@@ -1,7 +1,10 @@
 import React from "react"
-import Link from "next/link"
+import { useRouter } from "next/router"
+import {changeSingleStateValue} from '../util'
 
 export default function Contact({ contact, setContact}) {
+    const router = useRouter();
+
     React.useEffect(() => {
         setContact(prev => {
             return {
@@ -13,6 +16,8 @@ export default function Contact({ contact, setContact}) {
 
     function handleChange(event) {
         const { name, value} = event.target
+        if(name === "tel" && isNaN(event.nativeEvent.data)) {
+            return}
         setContact(prev => {
             return {
                 ...prev,
@@ -21,17 +26,38 @@ export default function Contact({ contact, setContact}) {
         })
     }
 
-    async function handleSubmit() {
-        setContact(prev => {
-            return {
-                ...prev,
-                contact: true,
-            }
-        })
-        await fetch('api/mail', {
-            method: 'POST',
-            body: JSON.stringify(contact)
-        })
+    function validateInputs() {
+        let formIsValid = true
+
+        if(!contact.name) {
+            formIsValid = false
+        }
+        if(!contact.email && !contact.tel) {
+            formIsValid = false
+        }
+        if(!contact.message) {
+            formIsValid = false
+        }
+
+        return formIsValid;
+    }
+
+    async function handleSubmit(event) {
+        event.preventDefault()
+        
+        changeSingleStateValue(setContact, "contact", true)
+        if (validateInputs()) {
+            
+            await fetch('api/mail', {
+                method: 'POST',
+                body: JSON.stringify(contact)
+            })
+
+            router.push("/request-sent")
+        } else {
+
+        }
+
     }
 
     return (
@@ -48,10 +74,11 @@ export default function Contact({ contact, setContact}) {
                 <div className="contact-inputs">
                     <input
                         type={'text'}
-                        placeholder="Your name"
+                        placeholder="Your name*"
                         name="name"
                         value={contact.name}
                         onChange={handleChange}
+                        className={`${contact.contact && !contact.name && "check"}`}
                     />
                     <input
                         type={'email'}
@@ -59,6 +86,7 @@ export default function Contact({ contact, setContact}) {
                         name="email"
                         value={contact.email}
                         onChange={handleChange}
+                        className={`${contact.contact && (!contact.tel && !contact.email) && "check"}`}
                     />
                     <input
                         type={'tel'}
@@ -66,20 +94,20 @@ export default function Contact({ contact, setContact}) {
                         name="tel"
                         value={contact.tel}
                         onChange={handleChange}
+                        className={`${contact.contact && (!contact.tel && !contact.email) && "check"}`}
                     />
                 </div>
                 <div className="contact-ta">
                     <textarea 
-                        placeholder="Your message"
+                        placeholder="Your message*"
                         name="message"
                         value={contact.message}
                         onChange={handleChange}
+                        className={`${contact.contact && !contact.message && "check"}`}
                     />
                 </div>
                 <div className="contact-btn">
-                    <Link href={{pathname:"/request-sent", query:{}}} >
                         <button onClick={handleSubmit}>Send</button>
-                    </Link>
                 </div>
             </form>
         </div>

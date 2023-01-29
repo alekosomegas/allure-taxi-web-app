@@ -4,24 +4,25 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from '@/components/Navbar'
 
 export default function App({ Component, pageProps }) {
-
-  const [locationSelected, setLocationSelected] = React.useState(false);
-      // whether a location is selected
-  const [selected, setSelected] = React.useState({from: false, to: false})
-  const [route, setRoute] = React.useState(
-      {from: {coordinates: [], address: ""}, 
-       to:   {coordinates: [], address: ""}})
-
-  const [date, setDate] = React.useState(new Date());
-
   const [ride, setRide] = React.useState({
-        route: route,
+        route: {
+            from: {
+                address: "",
+                coordinates: [],
+            },
+            to: {
+                address: "",
+                coordinates: [],
+            },
+        },
+        locationSelected: {from: false, to: false},
         notesFrom: "",
         notesTo: "",
-        dateAndTime: "",
+        dateAndTime: new Date(),
         email: "",
         tel: "",
         name: "",
+        car: 4,
         requests: "",
     })
 
@@ -32,7 +33,6 @@ export default function App({ Component, pageProps }) {
       tel: "",
       message: "",
   })
-    
 
   return (
     <>
@@ -41,17 +41,8 @@ export default function App({ Component, pageProps }) {
             {...pageProps} 
             contact={contact}
             setContact={setContact}
-            date={date}
-            setDate={setDate}
             ride={ride}
             setRide={setRide}
-            route={route}
-            setRoute={setRoute}
-            locationSelected={locationSelected}
-            setLocationSelected={setLocationSelected}
-            selected={selected}
-            setSelected={setSelected}
-            
           />
     </>
 

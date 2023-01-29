@@ -11,7 +11,7 @@ const provider = new OpenStreetMapProvider({
     },
 });
 
-export default function SearchInput({ label, route, onChange, onClick, selected, onClear }) {
+export default function SearchInput({ label, route, onChange, onClick, selected, onClear, isInvalid }) {
 
     const [suggestions, setSuggestions] = React.useState([])
 
@@ -59,7 +59,7 @@ export default function SearchInput({ label, route, onChange, onClick, selected,
                         placeholder={label === "from" ? "Pick-up Location" : "Drop-off Location"} 
                         onChange={onChange}
                         value={route[label].address}
-                        className='input-search'
+                        className={`input-search ${isInvalid && "check"}`}
                     />
                 </label>
                     {

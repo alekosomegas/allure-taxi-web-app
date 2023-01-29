@@ -8,7 +8,7 @@ import AboutUs from '@/components/AboutUs'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function Home({ contact, setContact, date, setDate, ride, setRide, route, setRoute, selected, setSelected }) {
+export default function Home({ contact, setContact, ride, setRide }) {
   return (
     <>
       <Head>
@@ -21,10 +21,7 @@ export default function Home({ contact, setContact, date, setDate, ride, setRide
       <main className={styles.main}>
 
         <RideRequest
-          date={date} setDate={setDate}
           ride={ride} setRide={setRide}
-          route={route} setRoute={setRoute}
-          selected={selected} setSelected={setSelected} 
         />
 
         <AboutUs />
