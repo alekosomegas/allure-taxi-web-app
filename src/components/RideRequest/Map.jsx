@@ -5,9 +5,11 @@ import React from 'react';
 import { icon } from 'leaflet'
 
 function FitBounds({ fit, coordinates }) {
-    if (!fit) return
+    if (!fit || !coordinates) return
     const map = useMap()
-    map.flyToBounds(coordinates)
+    if((coordinates[0][0] !== coordinates[1][0]) && (coordinates[0][1] !== coordinates[1][1])) {
+        map.flyToBounds(coordinates)
+    }
 }
 
 function SetView({ set, center }) {

@@ -4,6 +4,7 @@ import {changeSingleStateValue} from '../util'
 
 export default function Contact({ contact, setContact}) {
     const router = useRouter();
+    const [sendClicked, setSendClicked] = React.useState(false)
 
     React.useEffect(() => {
         setContact(prev => {
@@ -44,10 +45,9 @@ export default function Contact({ contact, setContact}) {
 
     async function handleSubmit(event) {
         event.preventDefault()
-        
-        changeSingleStateValue(setContact, "contact", true)
+        setSendClicked(true)
         if (validateInputs()) {
-            
+            changeSingleStateValue(setContact, "contact", true)
             await fetch('api/mail', {
                 method: 'POST',
                 body: JSON.stringify(contact)
@@ -78,7 +78,7 @@ export default function Contact({ contact, setContact}) {
                         name="name"
                         value={contact.name}
                         onChange={handleChange}
-                        className={`${contact.contact && !contact.name && "check"}`}
+                        className={`${sendClicked && !contact.name && "check"}`}
                     />
                     <input
                         type={'email'}
@@ -86,7 +86,7 @@ export default function Contact({ contact, setContact}) {
                         name="email"
                         value={contact.email}
                         onChange={handleChange}
-                        className={`${contact.contact && (!contact.tel && !contact.email) && "check"}`}
+                        className={`${sendClicked && (!contact.tel && !contact.email) && "check"}`}
                     />
                     <input
                         type={'tel'}
@@ -94,7 +94,7 @@ export default function Contact({ contact, setContact}) {
                         name="tel"
                         value={contact.tel}
                         onChange={handleChange}
-                        className={`${contact.contact && (!contact.tel && !contact.email) && "check"}`}
+                        className={`${sendClicked && (!contact.tel && !contact.email) && "check"}`}
                     />
                 </div>
                 <div className="contact-ta">
@@ -103,7 +103,7 @@ export default function Contact({ contact, setContact}) {
                         name="message"
                         value={contact.message}
                         onChange={handleChange}
-                        className={`${contact.contact && !contact.message && "check"}`}
+                        className={`${sendClicked && !contact.message && "check"}`}
                     />
                 </div>
                 <div className="contact-btn">

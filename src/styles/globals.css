@@ -277,6 +277,12 @@ main{
     }
 }
 
+@media screen and (max-height: 900px) {
+    .map-container {
+        height: 40vh;
+    }
+}
+
 .check {
     border-width: 1.5px;
     border-style: solid;
@@ -297,6 +303,19 @@ main{
     background-color: whitesmoke;
     padding: 30px;
     border-radius: 20px;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+#Contact {
+    color: white;
+    background-color: rgb(59, 59, 59);
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
     margin-left: 10%;
     margin-right: 10%;
 }

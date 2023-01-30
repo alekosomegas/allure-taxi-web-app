@@ -158,7 +158,7 @@ export default function RouteForm({  ride, setRide, confirm }) {
 
             <SearchInput 
                 label="to"   
-                route={ride.route} 
+                route={ride.route}
                 selected={ride.locationSelected} 
                 onChange={handleChange} 
                 onClick={(event) => handleSuggestionClicked(event, "to")}
