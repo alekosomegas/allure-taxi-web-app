@@ -22,6 +22,7 @@ function BasicExample() {
             <Nav.Link href="/#Ride">Home</Nav.Link>
             <Nav.Link href="/#AboutUs">About Us</Nav.Link>
             <Nav.Link href="/#Contact">Contact</Nav.Link>
+            <Nav.Link href="https://www.allure-rent-a-car.com">Rent a Car</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
